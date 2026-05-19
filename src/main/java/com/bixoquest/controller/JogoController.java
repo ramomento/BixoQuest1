@@ -19,7 +19,9 @@ public class JogoController {
 
     private Jogo jogo;
 
-    public JogoController() {
+    public JogoController(Jogo jogo) {
+        this.jogo = jogo;
+    }public JogoController() {
         this.jogo = new Jogo();
     }
 
