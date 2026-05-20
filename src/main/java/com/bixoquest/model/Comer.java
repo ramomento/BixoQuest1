@@ -28,8 +28,8 @@ public class Comer extends Acao {
         switch (item.getNome()) {
             case REMEDIO   -> { if (aluno.getSaude() == EstadoSaude.DOENTE) aluno.alterarSaude(EstadoSaude.SAUDAVEL); }
             case SANDUICHE -> aluno.aumentarMotivacao();
-            case CAFE      -> aluno.reduzirEnergia(-2);
-            case TORTA     -> { aluno.reduzirEnergia(-2); aluno.aumentarMotivacao(); }
+            case CAFE -> { aluno.aumentarEnergia(); aluno.aumentarEnergia(); }
+            case TORTA -> { aluno.aumentarEnergia(); aluno.aumentarEnergia(); aluno.aumentarMotivacao(); }
         }
     }
 

@@ -22,8 +22,8 @@ public class Disciplina {
     }
 
     public void adicionarNota(double valor){
-        // máximo de 3 notas por disciplina
-        if(notas.size() >= 3) return;
+        // máximo de 2 notas por disciplina
+        if(notas.size() >= 2) return;
         if(valor < 0 || valor > 10) return;
         if(estado != EstadoDisciplina.CURSANDO) return;
         notas.add(valor);

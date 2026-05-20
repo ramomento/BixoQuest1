@@ -1,5 +1,7 @@
 package com.bixoquest.model;
 
+import com.bixoquest.enums.TipoDisciplina;
+
 public class EventoProva extends Evento {
     private Disciplina disciplina;
     private double peso;
@@ -23,6 +25,8 @@ public class EventoProva extends Evento {
     @Override
     public void aplicar(Aluno aluno, Jogo jogo) {
         jogo.setProvaAtiva(this);
+        System.out.println("\n⚠ Prova de " + disciplina.getNome() + " disponível! Vá até " +
+                (disciplina.getTipo() == TipoDisciplina.SOFTWARE ? "Sala de Aula" : "Laboratório") + ".");
     }
 
     public Disciplina getDisciplina() { return disciplina; }
