@@ -1,6 +1,7 @@
 package com.bixoquest.model;
 
 import com.bixoquest.enums.EstadoDisciplina;
+import com.bixoquest.enums.EstadoSaude;
 import com.bixoquest.enums.TipoDisciplina;
 
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ public class Jogo {
         // disciplinas geradas antes do semestre pois o semestre depende delas
         this.disciplinasDisponiveis = gerarDisciplinas();
         this.semestreAtual = new Semestre(1, gerarDisciplinasParaSemestre());
+        agendarProvasSemestre();
     }
 
     private List<Disciplina> gerarDisciplinas(){
@@ -65,6 +67,23 @@ public class Jogo {
 
     public boolean isCantinaOcupada(){return cantinaOcupada;}
 
+    private void agendarProvasSemestre() {
+        sistemaDeEventos = new SistemaDeEventos();
+        int conhecimentoBase = 200 * semestreAtual.getNumero();
+
+        for (Disciplina d : semestreAtual.getDisciplinas()) {
+            int[] turnos = d.getTipo() == TipoDisciplina.HARDWARE ? new int[]{2, 5} : new int[]{3, 6};
+            double pesoTeorico = d.getTipo() == TipoDisciplina.SOFTWARE ? 70 : 30;
+            double pesoPratico = d.getTipo() == TipoDisciplina.SOFTWARE ? 30 : 70;
+
+            for (int i = 0; i < turnos.length; i++) {
+                int conhecimentoEsperado = i == 0 ? conhecimentoBase : (int)(conhecimentoBase * 1.25);
+                int turnoGlobal = turnoAtual + turnos[i] - 1;
+                EventoProva prova = new EventoProva(d, 1.0, pesoTeorico, pesoPratico, turnoGlobal, conhecimentoEsperado);
+                sistemaDeEventos.adicionarEventoFixo(prova);
+            }
+        }
+    }
 
     public void finalizarTurno(){
         sistemaDeEventos.processarEventos(turnoAtual, aluno, this);
@@ -72,10 +91,17 @@ public class Jogo {
         semestreAtual.avancarTurno();
         cantinaOcupada = false;
 
-        if (semestreAtual.terminouSemestre()){
+        if (semestreAtual.terminouSemestre()) {
             semestreAtual.avaliarDisciplinas(aluno);
             int proximoNumero = semestreAtual.getNumero() + 1;
             semestreAtual = new Semestre(proximoNumero, gerarDisciplinasParaSemestre());
+            agendarProvasSemestre();
+        }
+
+        if (aluno.getSaude() == EstadoSaude.CANSADO) {
+            aluno.setEnergia(5);
+        } else {
+            aluno.setEnergia(10);
         }
         turnoAtual++;
     }

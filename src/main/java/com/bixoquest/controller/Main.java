@@ -108,14 +108,20 @@ public class Main {
             System.out.println("\nO que deseja fazer?");
             System.out.println("1. Mover para outro local");
             System.out.println("2. Realizar ação no local atual");
-            System.out.println("3. Salvar partida");
             System.out.println("0. Voltar ao menu");
             System.out.print("Escolha: ");
 
             switch (lerInteiro()) {
                 case 1 -> moverAluno(jogo);
-                case 2 -> executarAcaoNoLocal(controller);
-                case 3 -> { GerenciadorDeSaves.salvar(jogo, slot); System.out.println("Partida salva!"); }
+                case 2 -> {
+                    int turnoAntes = controller.getJogo().getTurnoAtual();
+                    executarAcaoNoLocal(controller);
+                    if (controller.getJogo().getTurnoAtual() > turnoAntes) {
+                        exibirFeedbackEvento(controller.getJogo());
+                        GerenciadorDeSaves.salvar(jogo, slot);
+                        System.out.println("Progresso salvo automaticamente.");
+                    }
+                }
                 case 0 -> { return; }
                 default -> System.out.println("Opção inválida.");
             }
@@ -169,12 +175,6 @@ public class Main {
     private static boolean verificarFimDeJogo(Jogo jogo) {
         Aluno aluno = jogo.getAluno();
 
-        if (aluno.getDinheiro() <= 0) {
-            System.out.println("\n=== FIM DE JOGO ===");
-            System.out.println("Você ficou sem dinheiro e precisou abandonar o curso.");
-            return true;
-        }
-
         long aprovadas = jogo.getDisciplinasDisponiveis().stream()
                 .filter(d -> d.getEstado() == com.bixoquest.enums.EstadoDisciplina.APROVADO)
                 .count();
@@ -214,5 +214,25 @@ public class Main {
 
         controller.executarAcao(acaoEscolhida);
         System.out.println("Ação realizada com sucesso!");
+    }
+
+    private static void exibirFeedbackEvento(Jogo jogo) {
+        System.out.println("\n=== Fim de Turno ===");
+        System.out.println("Turno " + (jogo.getTurnoAtual() - 1) + " encerrado.");
+
+        if (jogo.getSemestreAtual().getTurnoAtual() == 1) {
+            System.out.println("\n=== Fim de Semestre ===");
+            System.out.println("Resultado das disciplinas:");
+            for (Disciplina d : jogo.getSemestreAtual().getDisciplinas()) {
+                System.out.println(d.getNome() + " | " + d.getEstado() + " | Média: " + String.format("%.1f", d.calcularMedia()));
+            }
+            System.out.println("\nSemestre " + jogo.getSemestreAtual().getNumero() + " iniciado!");
+        }
+
+        if (jogo.getProvaAtiva() != null) {
+            System.out.println("\n⚠ Há uma prova disponível em " +
+                    (jogo.getProvaAtiva().getDisciplina().getTipo() == com.bixoquest.enums.TipoDisciplina.SOFTWARE
+                            ? "Sala de Aula" : "Laboratório") + "!");
+        }
     }
 }

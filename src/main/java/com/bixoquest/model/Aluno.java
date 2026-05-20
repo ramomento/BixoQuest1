@@ -115,8 +115,14 @@ public class Aluno {
 
 
     public void alterarMotivacao(EstadoMotivacao estado) { this.motivacao = estado; }
+
     public void setConselhosUsados(int valor) { this.conselhosUsados = valor; }
     public void setDesempenhoAcademico(int valor) { this.desempenhoAcademico = valor; }
     public void setProgressoHardware(int valor) { this.progressoHardware = valor; }
     public void setProgressoSoftware(int valor) { this.progressoSoftware = valor; }
+    public void setEnergia(int valor) {
+        if (valor < 0) this.energia = 0;
+        else if (valor > 10) this.energia = 10;
+        else this.energia = valor;
+    }
 }

@@ -45,14 +45,13 @@ class DisciplinaTest {
     }
 
     @Test
-    void adicionarQuartaNotaDeveSerIgnorada() {
+    void adicionarTerceiraNotaDeveSerIgnorada() {
         Disciplina disc = new Disciplina("Algoritmos 1", TipoDisciplina.SOFTWARE, null);
         disc.setEstado(EstadoDisciplina.CURSANDO);
         disc.adicionarNota(8.0);
         disc.adicionarNota(7.0);
-        disc.adicionarNota(9.0);
         disc.adicionarNota(6.0);
-        assertEquals(3, disc.getNotas().size());
+        assertEquals(2, disc.getNotas().size());
     }
 
     @Test
