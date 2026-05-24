@@ -1,4 +1,3 @@
-// Colegiado.java
 package com.bixoquest.model;
 import java.util.ArrayList;
 import java.util.List;

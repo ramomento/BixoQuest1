@@ -1,4 +1,3 @@
-// Local.java
 package com.bixoquest.model;
 import java.util.List;
 

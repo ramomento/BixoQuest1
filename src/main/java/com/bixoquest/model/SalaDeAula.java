@@ -1,4 +1,3 @@
-// SalaDeAula.java
 package com.bixoquest.model;
 import com.bixoquest.enums.TipoDisciplina;
 import java.util.ArrayList;

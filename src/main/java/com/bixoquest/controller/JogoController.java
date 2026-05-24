@@ -1,7 +1,7 @@
 /*******************************************************************************
  Autores: Ramon Santos da Silva, Lucas Willis Rios Bastos
  Componente Curricular: MI - Algoritmos e Programação II
- Fase I concluida em: 11/04/2026
+ Fase II concluida em: 22/05/2026
  Declaro que este código foi elaborado por mim de forma individual e não contém nenhum
  trecho de código de outro colega ou de outro autor, tais como provindos de livros e
  apostilas, e páginas ou documentos eletrônicos da Internet. Qualquer trecho de código

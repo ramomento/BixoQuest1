@@ -1,4 +1,3 @@
-// CursarDisciplina.java
 package com.bixoquest.model;
 
 public class CursarDisciplina extends Acao {
