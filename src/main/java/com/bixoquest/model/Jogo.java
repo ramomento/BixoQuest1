@@ -72,7 +72,7 @@ public class Jogo {
         int conhecimentoBase = 200 * semestreAtual.getNumero();
 
         for (Disciplina d : semestreAtual.getDisciplinas()) {
-            int[] turnos = d.getTipo() == TipoDisciplina.HARDWARE ? new int[]{2, 5} : new int[]{3, 6};
+            int[] turnos = d.getTipo() == TipoDisciplina.HARDWARE ? new int[]{2, 4} : new int[]{3, 5};
             double pesoTeorico = d.getTipo() == TipoDisciplina.SOFTWARE ? 70 : 30;
             double pesoPratico = d.getTipo() == TipoDisciplina.SOFTWARE ? 30 : 70;
 
@@ -93,9 +93,18 @@ public class Jogo {
 
         if (semestreAtual.terminouSemestre()) {
             semestreAtual.avaliarDisciplinas(aluno);
+            for (Disciplina d : disciplinasDisponiveis) {
+                if (d.getEstado() == EstadoDisciplina.BLOQUEADA && d.podeSerCursada()) {
+                    d.setEstado(EstadoDisciplina.DISPONIVEL);
+                }
+            }
+
             int proximoNumero = semestreAtual.getNumero() + 1;
             semestreAtual = new Semestre(proximoNumero, gerarDisciplinasParaSemestre());
+            aluno.adicionarDinheiro(200.0);
             agendarProvasSemestre();
+            provaAtiva = null;
+
         }
 
         if (aluno.getSaude() == EstadoSaude.CANSADO) {

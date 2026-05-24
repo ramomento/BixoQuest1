@@ -1,4 +1,3 @@
-// Main.java
 package com.bixoquest.controller;
 
 import com.bixoquest.model.Jogo;
@@ -8,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import java.util.Scanner;
-
+// Classe de validação do fluxo de execução via terminal — será substituída pela View em JavaFX na Fase 3
 public class Main {
 
     private static final Scanner scanner = new Scanner(System.in);

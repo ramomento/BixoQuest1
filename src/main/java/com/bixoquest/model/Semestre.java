@@ -21,7 +21,7 @@ public class Semestre {
     }
 
     public boolean terminouSemestre(){
-        return turnoAtual >= totalTurnos;
+        return turnoAtual > totalTurnos;
     }
 
     public void avaliarDisciplinas(Aluno aluno){

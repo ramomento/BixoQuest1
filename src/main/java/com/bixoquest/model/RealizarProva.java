@@ -11,17 +11,19 @@ public class RealizarProva extends Acao {
     }
 
     @Override
+    public boolean podeExecutar(Aluno aluno) {
+        return !eventoProva.isRealizada() &&
+                eventoProva.getDisciplina().getEstado() == EstadoDisciplina.CURSANDO &&
+                aluno.getEnergia() >= 4;
+    }
+
+    @Override
     public void executarAcao(Aluno aluno, Jogo jogo) {
+        aluno.reduzirEnergia(4);
         double nota = calcularNota(aluno);
         eventoProva.getDisciplina().adicionarNota(nota);
         eventoProva.setRealizada(true);
-        jogo.setProvaAtiva(null); // limpa prova ativa após realização
-    }
-    @Override
-    public boolean podeExecutar(Aluno aluno) {
-        // prova só pode ser realizada uma vez e a disciplina deve estar em curso
-        return !eventoProva.isRealizada() &&
-                eventoProva.getDisciplina().getEstado() == EstadoDisciplina.CURSANDO;
+        jogo.setProvaAtiva(null);
     }
 
     public double calcularNota(Aluno aluno) {
