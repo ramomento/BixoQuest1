@@ -1,29 +1,25 @@
 package com.bixoquest.model;
-
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 
 public class Cantina extends Local {
-    private List<ItemCantina> itens;
-
     public Cantina(Jogo jogo) {
         super("Cantina", jogo);
-        this.itens = new ArrayList<>();
-        itens.add(new ItemCantina("Remédio",   10.0, 3));
-        itens.add(new ItemCantina("Sanduíche",  8.0, 5));
-        itens.add(new ItemCantina("Café",        4.0, 5));
-        itens.add(new ItemCantina("Torta",      15.0, 3));
     }
 
     @Override
     public List<Acao> getAcoesDisponiveis() {
         List<Acao> acoes = new ArrayList<>();
+
+        // Adiciona Comer para cada item
+        acoes.add(new Comer(new ItemCantina("Café", 10.0, 999)));
+        acoes.add(new Comer(new ItemCantina("Sanduíche", 15.0, 999)));
+        acoes.add(new Comer(new ItemCantina("Torta", 20.0, 999)));
+        acoes.add(new Comer(new ItemCantina("Remédio", 25.0, 999)));
+
+        // Interagir com animais
         acoes.add(new InteragirAnimais());
-        for (ItemCantina item : itens) {
-            if (item.estaDisponivel()) acoes.add(new Comer(item));
-        }
+
         return acoes;
     }
-
-    public List<ItemCantina> getItens() { return itens; }
 }
