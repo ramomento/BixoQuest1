@@ -11,28 +11,40 @@
 
 package com.bixoquest.controller;
 
-import com.bixoquest.model.Acao;
-import com.bixoquest.model.Aluno;
-import com.bixoquest.model.Jogo;
+import com.bixoquest.model.*;
+import com.bixoquest.view.SistemaDeAviso;
 
 public class JogoController {
 
     private Jogo jogo;
+    private Local localAtual;
+    private SistemaDeAviso sistemaDeAviso;
 
-    public JogoController(Jogo jogo) {
-        this.jogo = jogo;
-    }public JogoController() {
+
+    public JogoController() {
         this.jogo = new Jogo();
+        this.localAtual = new PontoDeOnibus(jogo);
+        this.sistemaDeAviso = new SistemaDeAviso();  // ADICIONE
     }
 
     public void executarAcao(Acao acao) {
-        // garante que a ação só é executada se as condições forem atendidas
         if (acao.podeExecutar(jogo.getAluno())) {
             acao.executarAcao(jogo.getAluno(), jogo);
         }
     }
 
-    public void finalizarTurno() { jogo.finalizarTurno(); }
+    public void moverPara(Local local) {
+        this.localAtual = local;
+        jogo.getAluno().moverPara(local);
+    }
+
+    public void finalizarTurno() {
+        jogo.finalizarTurno();
+    }
+
+    public SistemaDeAviso getSistemaDeAviso() { return sistemaDeAviso; }
+
     public Jogo getJogo() { return jogo; }
     public Aluno getAluno() { return jogo.getAluno(); }
+    public Local getLocalAtual() { return localAtual; }
 }
