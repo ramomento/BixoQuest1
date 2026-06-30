@@ -22,9 +22,14 @@ public class PopUpView {
     private int itemSelecionado = 0;
     private boolean exibeItens = false;
 
-    private static final double POS_X = 160;
-    private static final double POS_Y = 80;
-    private static final double LARGURA = 480;
+    // Sistema de paginação de conteúdo
+    private List<String> paginas = new ArrayList<>();
+    private int paginaAtual = 0;
+    private boolean usaPaginacao = false;
+
+    private static final double POS_X = 100;
+    private static final double POS_Y = 55;
+    private static final double LARGURA = 600;
     private static final double ALTURA = 360;
 
     public PopUpView() {
@@ -40,6 +45,47 @@ public class PopUpView {
 
     public void setConteudo(String conteudo) {
         this.conteudo = conteudo;
+        // Detectar automaticamente se precisa paginação
+        this.paginas = dividirEmPaginas(conteudo);
+        this.paginaAtual = 0;
+        this.usaPaginacao = paginas.size() > 1;
+    }
+
+    /**
+     * Divide o conteúdo em páginas (máx 2-3 disciplinas por página).
+     * Cada disciplina termina com "\n\n", então usamos isso como divisor.
+     */
+    private List<String> dividirEmPaginas(String conteudo) {
+        List<String> resultado = new ArrayList<>();
+        String[] linhas = conteudo.split("\n");
+
+        StringBuilder paginaAtual = new StringBuilder();
+        int linhasNaPagina = 0;
+        int maxLinhasPorPagina = 8; // ~2-3 disciplinas
+
+        for (String linha : linhas) {
+            paginaAtual.append(linha).append("\n");
+            linhasNaPagina++;
+
+            // Se atingiu o limite e é fim de disciplina (linha vazia)
+            if (linhasNaPagina >= maxLinhasPorPagina && linha.trim().isEmpty()) {
+                resultado.add(paginaAtual.toString().trim());
+                paginaAtual = new StringBuilder();
+                linhasNaPagina = 0;
+            }
+        }
+
+        // Adicionar última página
+        if (paginaAtual.length() > 0) {
+            resultado.add(paginaAtual.toString().trim());
+        }
+
+        // Se ficou vazio, adicionar conteúdo original
+        if (resultado.isEmpty()) {
+            resultado.add(conteudo);
+        }
+
+        return resultado;
     }
 
     public void setOpcoes(String[] opcoes) {
@@ -88,13 +134,27 @@ public class PopUpView {
     }
 
     private void renderizarConteudo() {
-        Text conteudoText = new Text(conteudo);
+        String conteudoExibido = usaPaginacao ?
+                paginas.get(paginaAtual) : conteudo;
+
+        Text conteudoText = new Text(conteudoExibido);
         conteudoText.setFont(GameFont.small());
         conteudoText.setX(30);
         conteudoText.setY(130);
         conteudoText.setFill(Color.WHITE);
         conteudoText.setWrappingWidth(420);
         pane.getChildren().add(conteudoText);
+
+        // Indicador de páginas (se usar paginação)
+        if (usaPaginacao && paginas.size() > 1) {
+            String indicador = "Página " + (paginaAtual + 1) + "/" + paginas.size();
+            Text indicadorText = new Text(indicador);
+            indicadorText.setFont(GameFont.small());
+            indicadorText.setX(380);
+            indicadorText.setY(310);
+            indicadorText.setFill(Color.web("#999999"));
+            pane.getChildren().add(indicadorText);
+        }
     }
 
     private void renderizarItens() {
@@ -177,21 +237,53 @@ public class PopUpView {
         }
     }
 
+    /**
+     * Navegar para próxima página (usada com paginação de conteúdo).
+     * Se houver itens, navega entre itens; caso contrário, navega entre páginas.
+     */
     public void proximoItem() {
-        if (exibeItens && itemSelecionado < itens.size() - 1) {
-            itemSelecionado++;
-            pane.getChildren().removeIf(node -> node instanceof ImageView ||
-                    (node instanceof Text && ((Text) node).getText().equals("▼")));
-            renderizarItens();
+        if (exibeItens) {
+            // Modo itens: navegar entre itens
+            if (itemSelecionado < itens.size() - 1) {
+                itemSelecionado++;
+                pane.getChildren().removeIf(node -> node instanceof ImageView ||
+                        (node instanceof Text && ((Text) node).getText().equals("▼")));
+                renderizarItens();
+            }
+        } else if (usaPaginacao) {
+            // Modo paginação: navegar entre páginas
+            if (paginaAtual < paginas.size() - 1) {
+                paginaAtual++;
+                pane.getChildren().removeIf(node -> node instanceof Text);
+                renderizarTitulo();
+                renderizarConteudo();
+                renderizarOpcoes();
+            }
         }
     }
 
+    /**
+     * Navegar para página anterior (usada com paginação de conteúdo).
+     * Se houver itens, navega entre itens; caso contrário, navega entre páginas.
+     */
     public void itemAnterior() {
-        if (exibeItens && itemSelecionado > 0) {
-            itemSelecionado--;
-            pane.getChildren().removeIf(node -> node instanceof ImageView ||
-                    (node instanceof Text && ((Text) node).getText().equals("▼")));
-            renderizarItens();
+        if (exibeItens) {
+            // Modo itens: navegar entre itens
+            if (itemSelecionado > 0) {
+                itemSelecionado--;
+                pane.getChildren().removeIf(node -> node instanceof ImageView ||
+                        (node instanceof Text && ((Text) node).getText().equals("▼")));
+                renderizarItens();
+            }
+        } else if (usaPaginacao) {
+            // Modo paginação: navegar entre páginas
+            if (paginaAtual > 0) {
+                paginaAtual--;
+                pane.getChildren().removeIf(node -> node instanceof Text);
+                renderizarTitulo();
+                renderizarConteudo();
+                renderizarOpcoes();
+            }
         }
     }
 

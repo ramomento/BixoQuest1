@@ -1,7 +1,9 @@
 package com.bixoquest.view;
 
 import com.bixoquest.controller.JogoController;
+import com.bixoquest.enums.EstadoDisciplina;
 import com.bixoquest.model.*;
+import com.bixoquest.persistence.GerenciadorDeSaves;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -85,9 +87,11 @@ public class TelaPrincipalView {
 
                 // Se a prova está ativa E é o turno correto, mostra o pop-up UMA VEZ
                 if (prova.isAtivo() && prova.getTurnoAplicacao() == controller.getJogo().getTurnoAtual()) {
-                    String disciplina = prova.getDisciplina().getNome();
-                    exibirPopUpProva(disciplina);
-                    prova.setAtivo(false);  // ← Marca como já visualizada
+                    if (!prova.isPopUpExibido()) {
+                        String disciplina = prova.getDisciplina().getNome();
+                        exibirPopUpProva(disciplina);
+                        prova.setPopUpExibido(true);
+                    }
                     break;
                 }
             }
@@ -278,9 +282,9 @@ public class TelaPrincipalView {
                     }
                 } else {
                     if (code == KeyCode.LEFT) {
-                        popUpAtual.opcaoAnterior();
+                        popUpAtual.itemAnterior();
                     } else if (code == KeyCode.RIGHT) {
-                        popUpAtual.proximaOpcao();
+                        popUpAtual.proximoItem();
                     } else if (code == KeyCode.ENTER) {
                         fecharPopUp();
                     } else if (code == KeyCode.ESCAPE) {
@@ -356,6 +360,12 @@ public class TelaPrincipalView {
     }
 
     private void selecionarLocal() {
+        // Verificar se Cantina está bloqueada por evento
+        if (opcaoSelecionada == 2 && controller.getJogo().isCantinaOcupada()) {
+            exibirPopUpCantinaCheia();
+            return;
+        }
+
         Local[] locais = {
                 new SalaDeAula(controller.getJogo()),
                 new Laboratorio(controller.getJogo()),
@@ -371,6 +381,18 @@ public class TelaPrincipalView {
 
         App.mostrarTelaPrincipal();
     }
+
+    private void exibirPopUpCantinaCheia() {
+        popUpAtual = new PopUpView();
+        popUpAtual.setTitulo("Cantina Cheia");
+        popUpAtual.setConteudo("A cantina está com uma fila enorme — não dá pra entrar agora!");
+        popUpAtual.setOpcoes(new String[]{"OK"});
+
+        pane.getChildren().add(popUpAtual.criarPopUp());
+        estadoMenu = EstadoMenu.POP_UP;
+        tipoPopUpAtual = TipoPopUp.CONSELHO;
+    }
+
 
     private void selecionarAcao() {
         List<Acao> acoes = controller.getLocalAtual().getAcoesDisponiveis();
@@ -394,6 +416,19 @@ public class TelaPrincipalView {
 
         if (acao instanceof ConsultarProgresso) {
             exibirPopUpProgresso();
+            return;
+        }
+
+        if (acao instanceof FinalizarTurno) {
+            controller.finalizarTurno();
+
+            // DEBUG
+            System.out.println("[DEBUG] Salvando jogo no slot " + App.getSlotAtivo());
+            GerenciadorDeSaves.salvar(controller.getJogo(), App.getSlotAtivo());
+            System.out.println("[DEBUG] Jogo salvo!");
+
+            controller.getSistemaDeAviso().exibirMensagem("Turno finalizado!");
+            App.mostrarTelaPrincipal();
             return;
         }
 
@@ -490,7 +525,7 @@ public class TelaPrincipalView {
     private void exibirPopUpProgresso() {
         popUpAtual = new PopUpView();
         popUpAtual.setTitulo("Seu Progresso");
-        popUpAtual.setConteudo("Sala de Aula: Cursando\nLaboratório: Disponível\nCantina: Desbloqueada");
+        popUpAtual.setConteudo(gerarProgressoDisciplinas());  // ← Dinâmico!
         popUpAtual.setOpcoes(new String[]{"OK"});
 
         pane.getChildren().add(popUpAtual.criarPopUp());
@@ -500,8 +535,8 @@ public class TelaPrincipalView {
 
     private void exibirPopUpProva(String disciplina) {
         popUpAtual = new PopUpView();
-        popUpAtual.setTitulo("⚠️ Prova Disponível");
-        popUpAtual.setConteudo(disciplina + "\n\nVocê pode fazer a prova neste turno.");
+        popUpAtual.setTitulo("⚠️ Prova Chegando");
+        popUpAtual.setConteudo(disciplina + "\n\nNo próximo turno você terá uma prova!");
         popUpAtual.setOpcoes(new String[]{"OK"});  // ← Apenas OK, sem opções
 
         pane.getChildren().add(popUpAtual.criarPopUp());
@@ -527,5 +562,34 @@ public class TelaPrincipalView {
         view.setFitWidth(largura);
         view.setFitHeight(altura);
         return view;
+    }
+
+    private String gerarProgressoDisciplinas() {
+        List<Disciplina> disciplinas = controller.getJogo().getDisciplinasDisponiveis();
+        StringBuilder progresso = new StringBuilder();
+
+        for (Disciplina d : disciplinas) {
+            progresso.append(d.getNome()).append("\n");
+            progresso.append("  Estado: ").append(d.getEstado()).append("\n");
+
+            // Se está cursando, mostra notas
+            if (d.getEstado() == EstadoDisciplina.CURSANDO) {
+                List<Double> notas = d.getNotas();
+                if (!notas.isEmpty()) {
+                    progresso.append("  Notas: ");
+                    for (int i = 0; i < notas.size(); i++) {
+                        progresso.append(String.format("%.1f", notas.get(i)));
+                        if (i < notas.size() - 1) progresso.append(", ");
+                    }
+                    progresso.append(" (Média: ").append(String.format("%.1f", d.calcularMedia())).append(")\n");
+                } else {
+                    progresso.append("  Notas: Nenhuma ainda\n");
+                }
+            }
+
+            progresso.append("\n");
+        }
+
+        return progresso.toString();
     }
 }

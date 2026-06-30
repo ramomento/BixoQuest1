@@ -1,7 +1,7 @@
 energia=10
 saude=SAUDAVEL
 motivacao=ALTA
-dinheiro=190.0
+dinheiro=165.0
 conhecimentoTeorico=0
 conhecimentoPratico=0
 desempenhoAcademico=0

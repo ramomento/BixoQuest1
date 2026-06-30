@@ -57,9 +57,18 @@ public class Jogo {
 
         for (Disciplina disciplina : disciplinasDisponiveis){
             // seleciona apenas disciplinas que o aluno pode e ainda não começou
-            if(disciplina.podeSerCursada() && disciplina.getEstado() == EstadoDisciplina.DISPONIVEL){
-                paraSemestre.add(disciplina);
-                disciplina.setEstado(EstadoDisciplina.CURSANDO);
+            if(disciplina.podeSerCursada()){
+                // Se reprovou, reseta para DISPONÍVEL e limpa as notas
+                if(disciplina.getEstado() == EstadoDisciplina.REPROVADO){
+                    disciplina.setEstado(EstadoDisciplina.DISPONIVEL);
+                    disciplina.getNotas().clear();  // ← Limpa notas anteriores
+                }
+
+                // Só adiciona se está DISPONÍVEL
+                if(disciplina.getEstado() == EstadoDisciplina.DISPONIVEL){
+                    paraSemestre.add(disciplina);
+                    disciplina.setEstado(EstadoDisciplina.CURSANDO);
+                }
             }
         }
         return paraSemestre;
@@ -78,7 +87,7 @@ public class Jogo {
 
             for (int i = 0; i < turnos.length; i++) {
                 int conhecimentoEsperado = i == 0 ? conhecimentoBase : (int)(conhecimentoBase * 1.25);
-                int turnoGlobal = turnoAtual + turnos[i] - 1;
+                int turnoGlobal = (semestreAtual.getNumero() - 1) * 6 + turnos[i];
                 EventoProva prova = new EventoProva(d, 1.0, pesoTeorico, pesoPratico, turnoGlobal, conhecimentoEsperado);
                 sistemaDeEventos.adicionarEventoFixo(prova);
             }
@@ -89,7 +98,12 @@ public class Jogo {
         sistemaDeEventos.processarEventos(turnoAtual, aluno, this);
         aluno.resetarConselhosUsados(); // reseta conselhos a cada turno
         semestreAtual.avancarTurno();
-        cantinaOcupada = false;
+        cantinaOcupada = false; // Reseta do turno anterior
+
+        // Sorteio de EventoCantinaCheia (5% de chance)
+        if (Math.random() < 0.05) {
+            cantinaOcupada = true;
+        }
 
         if (semestreAtual.terminouSemestre()) {
             semestreAtual.avaliarDisciplinas(aluno);
@@ -112,6 +126,7 @@ public class Jogo {
         } else {
             aluno.setEnergia(10);
         }
+        aluno.gastarDinheiro(10.0);
         turnoAtual++;
     }
 

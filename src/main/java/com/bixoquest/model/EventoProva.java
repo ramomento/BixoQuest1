@@ -6,6 +6,7 @@ public class EventoProva extends Evento {
     private Disciplina disciplina;
     private double peso;
     private boolean realizada;
+    private boolean popUpExibido = false;
     private double pesoTeorico;
     private double pesoPratico;
     private int conhecimentoEsperado;
@@ -36,4 +37,7 @@ public class EventoProva extends Evento {
     public int getConhecimentoEsperado() { return conhecimentoEsperado; }
     public boolean isRealizada() { return realizada; }
     public void setRealizada(boolean realizada) { this.realizada = realizada; }
+    public boolean isPopUpExibido() { return popUpExibido; }
+    public void setPopUpExibido(boolean exibido) { this.popUpExibido = exibido; }
+
 }

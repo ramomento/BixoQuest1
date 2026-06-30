@@ -48,8 +48,9 @@ public class Disciplina {
 
     public boolean podeSerCursada(){
         if(preRequisito == null) return true;
-        // verifica estado diretamente para evitar efeito colateral de estaAprovada()
-        return preRequisito.getEstado() == EstadoDisciplina.APROVADO;
+        // Permite cursar se pré-req foi aprovado OU se está reprovado (para tentar novamente)
+        EstadoDisciplina estadoPreReq = preRequisito.getEstado();
+        return estadoPreReq == EstadoDisciplina.APROVADO || estadoPreReq == EstadoDisciplina.REPROVADO;
     }
 
     public List<Double> getNotas(){ return notas; }

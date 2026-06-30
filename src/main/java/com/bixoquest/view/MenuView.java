@@ -64,10 +64,10 @@ public class MenuView {
     private void selecionarOpcao() {
         switch (opcaoSelecionada) {
             case 0: // Novo Jogo
-                App.mostrarSelecaoSlots();
+                App.mostrarSelecaoSlots(true);  // true = novo jogo
                 break;
             case 1: // Carregar
-                App.mostrarSelecaoSlots();
+                App.mostrarSelecaoSlots(false); // false = carregar
                 break;
             case 2: // Sair
                 System.exit(0);

@@ -13,6 +13,11 @@ public class SalaDeAula extends Local {
         List<Acao> acoes = new ArrayList<>();
         EventoProva prova = getJogo().getProvaAtiva();
 
+        System.out.println("[DEBUG] SalaDeAula - getProvaAtiva() = " + prova);
+        if (prova != null) {
+            System.out.println("[DEBUG] Tipo da prova: " + prova.getDisciplina().getTipo());
+        }
+
         // prova de software substitui a aula quando disponível
         if (prova != null && prova.getDisciplina().getTipo() == TipoDisciplina.SOFTWARE) {
             acoes.add(new RealizarProva(prova));

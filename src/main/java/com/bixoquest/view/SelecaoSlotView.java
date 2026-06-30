@@ -1,5 +1,8 @@
 package com.bixoquest.view;
 
+import com.bixoquest.controller.JogoController;
+import com.bixoquest.model.Jogo;
+import com.bixoquest.persistence.GerenciadorDeSaves;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -69,10 +72,24 @@ public class SelecaoSlotView {
     }
 
     private void selecionarSlot() {
-        // carrega a partida do slot selecionado ou cria nova
         System.out.println("Slot " + (slotSelecionado + 1) + " selecionado");
+        App.setSlotAtivo(slotSelecionado);
 
-        // por enquanto vai para a tela principal
+        if (App.isModoNovoJogo()) {
+            // NOVO JOGO - ignora save anterior, cria novo
+            App.setJogoController(new JogoController());
+            System.out.println("Novo jogo criado no slot " + (slotSelecionado + 1));
+        } else {
+            // CARREGAR - tenta carregar save existente
+            Jogo jogoCarregado = GerenciadorDeSaves.carregar(slotSelecionado);
+            if (jogoCarregado != null) {
+                App.setJogoController(new JogoController(jogoCarregado));
+                System.out.println("Partida carregada do slot " + (slotSelecionado + 1));
+            } else {
+                System.out.println("Nenhuma partida neste slot");
+            }
+        }
+
         App.mostrarTelaPrincipal();
     }
 
