@@ -22,8 +22,19 @@ public class GerenciadorDeSaves {
         File pasta = new File(PASTA_SAVES);
         if (!pasta.exists()) pasta.mkdirs();
 
+        File arquivo = new File(PASTA_SAVES + "save" + slot + ".txt");
+        System.out.println("[SAVE DEBUG] Caminho completo: " + arquivo.getAbsolutePath());
+
+        // Se arquivo existe, deleta antes
+        if (arquivo.exists()) {
+            boolean deleted = arquivo.delete();
+            System.out.println("[SAVE DEBUG] Arquivo deletado: " + deleted);
+        }
+
         try (BufferedWriter writer = new BufferedWriter(
-                new FileWriter(PASTA_SAVES + "save" + slot + ".txt"))) {
+                new FileWriter(arquivo))) {
+
+            System.out.println("[SAVE DEBUG] Escrevendo em: " + arquivo.getName());
 
             Aluno aluno = jogo.getAluno();
 
@@ -69,8 +80,10 @@ public class GerenciadorDeSaves {
                 }
             }
 
+            System.out.println("[SAVE DEBUG] Escrita concluída!");
         } catch (IOException e) {
-            System.err.println("Erro ao salvar: " + e.getMessage());
+            System.err.println("[SAVE ERROR] Erro ao salvar: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 

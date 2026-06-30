@@ -27,6 +27,12 @@ public class JogoController {
         this.sistemaDeAviso = new SistemaDeAviso();  // ADICIONE
     }
 
+    public JogoController(Jogo jogoCarregado) {
+        this.jogo = jogoCarregado;
+        this.localAtual = new PontoDeOnibus(jogoCarregado);
+        this.sistemaDeAviso = new SistemaDeAviso();
+    }
+
     public void executarAcao(Acao acao) {
         if (acao.podeExecutar(jogo.getAluno())) {
             acao.executarAcao(jogo.getAluno(), jogo);
