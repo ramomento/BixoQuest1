@@ -408,9 +408,15 @@ public class TelaPrincipalView {
 
         Acao acao = acoes.get(opcaoSelecionada);
 
-        // Verificar ações especiais
         if (acao instanceof PedirConselho) {
-            exibirPopUpConselho();
+            controller.executarAcao(acao);
+
+            // Exibir o conselho como pop-up
+            PedirConselho pedirConselho = (PedirConselho) acao;
+            String conselho = pedirConselho.getUltimoConselho();
+            if (conselho != null) {
+                exibirPopUpConselho(conselho);
+            }
             return;
         }
 
@@ -511,10 +517,10 @@ public class TelaPrincipalView {
         fecharPopUp();
     }
 
-    private void exibirPopUpConselho() {
+    private void exibirPopUpConselho(String conselho) {
         popUpAtual = new PopUpView();
-        popUpAtual.setTitulo("Conselho");
-        popUpAtual.setConteudo("Gerencie bem seu dinheiro, as despesas aparecem quando menos se espera!");
+        popUpAtual.setTitulo("💡 Conselho do Colegiado");
+        popUpAtual.setConteudo(conselho);
         popUpAtual.setOpcoes(new String[]{"OK"});
 
         pane.getChildren().add(popUpAtual.criarPopUp());

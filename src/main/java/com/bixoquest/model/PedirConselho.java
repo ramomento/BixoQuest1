@@ -13,13 +13,17 @@ public class PedirConselho extends Acao {
             "Lembre-se de pegar o ônibus para finalizar o turno."
     );
 
+    private String ultimoConselhoSorteado;  // ← Armazenar conselho sorteado
+
     @Override
     public void executarAcao(Aluno aluno, Jogo jogo) {
         if (!podeExecutar(aluno)) return;
 
         // sorteia um conselho aleatório
         int indice = (int) (Math.random() * CONSELHOS.size());
-        System.out.println("Conselho: " + CONSELHOS.get(indice));
+        ultimoConselhoSorteado = CONSELHOS.get(indice);
+
+        System.out.println("Conselho sorteado: " + ultimoConselhoSorteado);
 
         aluno.incrementarConselhosUsados();
     }
@@ -28,5 +32,12 @@ public class PedirConselho extends Acao {
     public boolean podeExecutar(Aluno aluno) {
         // limite de 3 conselhos por turno
         return aluno.getConselhosUsados() < 3;
+    }
+
+    /**
+     * Retorna o último conselho sorteado.
+     */
+    public String getUltimoConselho() {
+        return ultimoConselhoSorteado;
     }
 }

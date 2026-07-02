@@ -27,10 +27,10 @@ public class PopUpView {
     private int paginaAtual = 0;
     private boolean usaPaginacao = false;
 
-    private static final double POS_X = 100;
-    private static final double POS_Y = 55;
-    private static final double LARGURA = 600;
-    private static final double ALTURA = 360;
+    private static final double POS_X = 80;
+    private static final double POS_Y = 40;
+    private static final double LARGURA = 640;
+    private static final double ALTURA = 420;
 
     public PopUpView() {
         this.pane = new Pane();
@@ -127,8 +127,8 @@ public class PopUpView {
     private void renderizarTitulo() {
         Text tituloText = new Text(titulo);
         tituloText.setFont(GameFont.medium());
-        tituloText.setX(30);
-        tituloText.setY(45);
+        tituloText.setX(130);
+        tituloText.setY(90);
         tituloText.setFill(Color.web("#FFD700"));
         pane.getChildren().add(tituloText);
     }
@@ -139,19 +139,19 @@ public class PopUpView {
 
         Text conteudoText = new Text(conteudoExibido);
         conteudoText.setFont(GameFont.small());
-        conteudoText.setX(30);
-        conteudoText.setY(130);
+        conteudoText.setX(100);
+        conteudoText.setY(135);
         conteudoText.setFill(Color.WHITE);
-        conteudoText.setWrappingWidth(420);
+        conteudoText.setWrappingWidth(500);
         pane.getChildren().add(conteudoText);
 
-        // Indicador de páginas (se usar paginação)
+        // Indicador de páginas
         if (usaPaginacao && paginas.size() > 1) {
             String indicador = "Página " + (paginaAtual + 1) + "/" + paginas.size();
             Text indicadorText = new Text(indicador);
             indicadorText.setFont(GameFont.small());
-            indicadorText.setX(380);
-            indicadorText.setY(310);
+            indicadorText.setX(450);  // Ajustado
+            indicadorText.setY(370);  // Ajustado
             indicadorText.setFill(Color.web("#999999"));
             pane.getChildren().add(indicadorText);
         }
@@ -203,8 +203,8 @@ public class PopUpView {
         textosOpcoes.clear();
 
         int espacoEntreOpcoes = 120;
-        int startX = 40;
-        int startY = 300;
+        int startX = 270;           // Era 40, aumentado
+        int startY = 340;          // Era 300, ajustado para caber melhor
 
         for (int i = 0; i < opcoes.length; i++) {
             Text opcaoText = new Text(opcoes[i]);
